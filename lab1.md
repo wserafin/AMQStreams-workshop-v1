@@ -1,63 +1,63 @@
-## Installation d'un cluster Kafka avec l'opérateur AMQ Streams
+## Installing a Kafka Cluster with the AMQ Streams Operator
 
-#### Étape 1:  Connection au cluster OpenShift
+#### STEP 1:  OpenShift Cluster Connection
 
-Connection au cluster OpenShift avec l'usager et password fournit durant l'atelier.
+Connection to the OpenShift cluster with the user and password provided during the workshop.
 
 
-#### Étape 2:  Création d'un cluster Kafka
+#### STEP 2:  Creating a Kafka Cluster
 
-L'opérateur AMQ Streams a été installé par l'administrateur du cluster et est disponible pour votre projet.
+The AMQ Streams operator has been installed by the cluster administrator and is available for your project.
 
-Dans le projet userXX-Kafka, à partir du catalogue, ajouter un cluster Kafka (bouton "Browse Catalog")
+In the userXX-Kafka project, from the catalog, add a Kafka cluster ("Browse Catalog" button)
 
 ![Catalog](images/lab1-install-01.png)
 
-Choisir l'option 'Kafka"
+Choose the 'Kafka' option
 
 ![Catalog](images/lab1-install-02.png)
 
-Créer un cluster Kafka (bouton "Create")
+Create a Kafka cluster ("Create" button)
 
 ![Catalog](images/lab1-install-03.png)
 
-Examiner le fichier YAML. Ce fichier est utilisé par l'opérateur pour configurer et installer le cluster Kafka.
+Examine the YAML file. This file is used by the operator to configure and install the Kafka cluster.
 
 ![Operator Config](images/lab1-install-04.png)
 
-1)  Nom du cluster et projet dans lequel il sera installé.
-2)  Définition des 'listeners' qui seront déployés (Interne au cluster, externe, encryption ou non) et nombre de brokers Kafka
-3)  Type de stockage pour Kafka (pour le lab - stockage éphémère dans le conteneur)
-4)  Nombre de replicas pour le Zookeeper et type de stockage pour le Zookeeper 
-5)  Operators additionnels a déployer
+1. Cluster name and project in which it will be installed.
+2. Definition of the 'listeners' that will be deployed (internal to the cluster, external, encryption or not) and number of   Kafka brokers
+3. Storage type for Kafka (for the lab - ephemeral storage in the container)
+4. Number of replicas for the Zookeeper and storage type for the Zookeeper
+5. Additional operators to deploy
 
-Pour le lab, les paramêtres par défaut seront utilisés
 
-Pour créer le cluster, utiliser le bouton "Create"
+For the lab, the default settings will be used
 
-L'opéator AMQ Streams démarre le processus de création de votre cluster Kafka:
+To create the cluster, use the "Create" button
+
+The AMQ Streams opeator starts the process of creating your Kafka cluster:
 
 ![Catalog](images/lab1-install-05.png)
 
-Attendre que le cluster Kafka démarrre.   
+Wait for the Kafka cluster to start.  
 
 ![Catalog](images/lab1-install-06.png)
 
-Pour valider l'état du cluster, dans la console OpenShift, selectionner le menu Pod, dans votre projet (userXX-kafka). 
-Attendre que les 7 pods du cluster Kafka soient 'Running' et 'Ready'
+To validate the cluster status, in the OpenShift console, select the Pod menu in your project (userXX-kafka). Wait for the 7 pods of the Kafka cluster to be 'Running' and 'Ready'
 
-ou avec l'outil ligne de commande oc:
+or with the command line tool oc:
 ```
 oc get pods -w -n kafka-devXX
 ```
 
-#### Étape 3:  Validation de l'installation
+#### STEP 3:  Validation of the installation
 
-Les outils Kafka disponible avec la distribution standard de Kafka sont disponible en conteneur dans le registre Red Hat pour être executés sur OpenShift.
+The Kafka tools available with the standard Kafka distribution are available as a container in the Red Hat Registry to run on OpenShift.
 
-Avec le client OpenShift, demarrer dans deux fenêtres differentes un producteur et un consommateur:
+With the OpenShift client, start in two different windows a producer and a consumer:
 
-Producteur:
+Producer:
 
 ```
 oc project userXX-kafka
@@ -66,13 +66,12 @@ oc run kafka-producer -ti --image=registry.access.redhat.com/amq7/amq-streams-ka
 ```
 
 
-Consommateur:
+Consumer:
 ```
 oc run kafka-consumer -ti --image=registry.access.redhat.com/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic my-topic --from-beginning
 ```
 
-Le producteur est un "console" producer, un client Kafka qui envoie tous les messages entrer dans la console dans un topic kafka.
-Entrez un message dans la console du producteur, le message devrait être affiché dans la fenêtre du consommateur.
+The producer is a producer "console", a Kafka client that sends all messages to enter the console in a kafka topic. Enter a message in the producer's console, the message should be displayed in the consumer window.
 
 ![Kafka Test](images/lab1-kafka-test.png)
 
