@@ -1,13 +1,12 @@
 ## Kafka Connect
 
-#### Étape 1:  Création du Cluster Kafka Connect
+#### Step 1: Creating the Kafka Connect Cluster
 
-En utilisant l'operator AMQ Streams, créer un cluster Kafka Connect:
+Using the AMQ Streams operator, create a Kafka Connect cluster:
 
 ![Kafka Connect](images/lab5-connect-01.png)
 
-Dans la spécification YAML de votre cluster Kafka Connect, ajouter la source de l'image du conteneur.
-Des plugins nécessaires à cet exercice ont été ajouté à la configuration de Kafka Connect. Attention au espace, ils sont important
+In the YAML specification of your Kafka Connect cluster, add the source of the container image. Plugins needed for this exercise have been added to the Kafka Connect configuration. Attention to space, they are important
 
 ```
   image: quay.io/msauve/kafkaconnect
@@ -15,11 +14,11 @@ Des plugins nécessaires à cet exercice ont été ajouté à la configuration d
 
 ![Kafka Connect](images/lab5-connect-02.png)
 
-Créer le Cluster Kafka-Connect et attender que le pod soit prêt et déployé.
+Create the Kafka-Connect Cluster and wait for the pod to be ready and deployed.
 
 ![Kafka Connect](images/lab5-connect-03.png)
 
-#### Étape 2: Installation d'une base de données
+#### Step 2: Installing a database
 
 
 oc new-app --name=mysql debezium/example-mysql:0.9
@@ -27,9 +26,9 @@ oc new-app --name=mysql debezium/example-mysql:0.9
 oc set env dc/mysql MYSQL_ROOT_PASSWORD=debezium  MYSQL_USER=mysqluser MYSQL_PASSWORD=mysqlpw
 
 
-#### Étape 3 : Création d'un connecteur avec l'API Kafka Connect
+#### Step 3: Creating a connector with the Kafka Connect API
 
-Exécuter le script suivant (MacOS, Bash ou Linux) dans une fenêtre "Terminal" pour créer une source d'événements Kafka-Connect.
+Run the following script (MacOS, Bash, or Linux) in a "Terminal" window to create a Kafka-Connect event source.
 
 ```
 oc exec -i -c kafka my-cluster-kafka-0 -- curl -X POST \
@@ -56,7 +55,7 @@ oc exec -i -c kafka my-cluster-kafka-0 -- curl -X POST \
 EOF
 ```
 
-Pour les environnements Windows, utiliser la procédure suivante:
+For Windows environments, use the following procedure:
 
 ```
 oc rsh my-cluster-kafka-0
@@ -85,26 +84,26 @@ curl -X POST \
 EOF
 ```
 
-##### Explication des paramêtres
+##### Explanation of the parameters
 
 ![Kafka Connect API](images/kafka-connect-api.png)
 
-* 1) Appel de l'API kafka connect à partir du broker kafka. Kafka-Connect par défaut, n'est pas exposé aux clients externes
-* 2) Utilisation du plugin debezium pour MySQL
-* 3) Configuration de la base de données et serveur à utiliser comme source d'événment. Les modifications et créations seront publiés dans un topic kafka indépendent pour chaque table (SERVER.DB.TABLE).
+* 1) Call the kafka connect API from the kafka broker. Kafka-Connect by default, is not exposed to external clients
+* 2) Using the Debezium plugin for MySQL
+* 3) Configuration of the database and server to use as an event source. Changes and creatives will be published in an independent kafka topic for each table (SERVER.DB.TABLE).
 
 
 
-#### Étape 4 : Exécution de Kafka-Connect
+#### Step 4: Running Kafka-Connect
 
-Dans une fenêtre Terminal, ouvrir un consumer kafka sur le topic: dbserver1.inventory.customers   
-Ce topic est automatiquement créé par Kafka Connect
+In a Terminal window, open a consumer kafka on the topic: dbserver1.inventory.customers
+This topic is automatically created by Kafka Connect
 
 ```
 oc run kafka-consumer -ti --image=registry.access.redhat.com/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092     --property print.key=true --topic dbserver1.inventory.customers --from-beginning
 ```
 
-Dans la console Openshift, ouvrir un terminal à l'intérieur du Pod MySql:
+In the Openshift console, open a terminal inside the MySql Pod:
 
 ![MySQL](images/lab5-connect-04.png)
 
@@ -113,7 +112,7 @@ Dans la console Openshift, ouvrir un terminal à l'intérieur du Pod MySql:
 * MySQL pod
 * Terminal Tab
 
-Dans le terminal, effectuer la connection à MySQl avec le client mysql installé dans le conteneur:
+In the terminal, connect to MySQl with the mysql client installed in the container:
 
 ```
 mysql -u mysqluser -p 
@@ -121,20 +120,20 @@ mysql -u mysqluser -p
 
 * password: mysqlpw
 
-Sélectionner la base de données "Inventory":
+Select the "Inventory" database:
 
 ```
 use inventory;
 ```
 
-Insérer des données (par example):
+Insert data (for example):
 
 ```
-insert into customers values (null,'Martin', 'Sauve', 'me@me.com');
+insert into customers values (null,'John', 'Doe', 'jdoe@me.com');
 ```
 
 
-Le contenu de la BD devrait être automatiquement envoyé par Kafka-Connect sur le topic Kafka (dbserver1.inventory.customers)
+The contents of the comic should be automatically sent by Kafka-Connect to the Kafka topic (dbserver1.inventory.customers)
 
 ![resultat](images/lab5-connect-red.png)
 
