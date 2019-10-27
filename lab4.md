@@ -1,30 +1,30 @@
-## Partitions, Réplication et "Consumer Groups" Kafka
+## Partitions, Replication and "Consumer Groups" Kafka
 
-#### Étape 1:  Création du Topic Kafka
+#### Step 1: Creating the Kafka Topic
 
-En utilisant l'operator AMQ Streams, créer un topic Kafka nommer "demo-4" avec 3 partitions et 3 replicas:
+Using the AMQ Streams operator, create a Kafka topic named "demo-4" with 3 partitions and 3 replicas:
 
-Dans la console OpenShift
+In the OpenShift consolet
 
-1) Sélectionner le project userXX-kafka
-2) Sélectionner "Installed Operators" dans le menu de gauche
-3) Créer un nouveau Topic avec le bouton "Create New"
+1) Select project userXX-kafka
+2) Select "Installed Operators" in the left menu
+3) Create a new Topic with the "Create New" button
 
 ![Console](images/lab2-partitions-01.png)
 
-Dans la page de configuration du topic, utiliser les paramêtres suivants:
+In the topic configuration page, use the following settings:
 * name:  demo-4
 * partitions: 3
 * replicas: 3
 
-Le nouveau Topic demo-4 apparait dans la liste des topics disponible. 
+The new Topic demo-4 appears in the list of available topics.
 
 
-#### Étape 2: Consumers et Consumer Groups 
+####  Consumers and Consumer Groups
 
-Ouvrir quatre différentes fenêtres "terminal".
+Open four different "terminal" windows.
 
-Dans les fenêtres 1 à 3, démarrer 3 Kafka Consumers dans un même Consumer Group:
+In windows 1 to 3, start 3 Kafka Consumers in the same Consumer Group:
 
 ```
 oc run kafka-consumer-1 -ti --image=registry.access.redhat.com/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic demo-4 --from-beginning --property print.key=true --property key.separator=":" --group group-1
@@ -40,39 +40,39 @@ oc run kafka-consumer-3 -ti --image=registry.access.redhat.com/amq7/amq-streams-
 
 ![Consumer Groups](images/lab4-groups-01.png)
 
-Dans l'image précédente:
+In the previous picture:
 
-* Group : Identificateur du Consumer Group Kafka pour le client
-* key.separator : le client s'attend a recevoir des messages indexés avec ":"  comme séparateur entre l'index et le contenu
-* print.key : la clé et le contenu seront affichés.
+* Group: Consumer Group Kafka's identifier for the customer
+* key.separator: the client expects to receive messages indexed with ":" as a separator between the index and the content
+* print.key: the key and the contents will be displayed.
 
-Ouvrir une quatrième fenêtre "terminal" et démarrer un consumner d'un autre consumer group Kafka:
+Open a fourth "terminal" window and start a consumer from another Kafka consumer group:
 
 ```
 oc run kafka-consumer-g2 -ti --image=registry.access.redhat.com/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-consumer.sh --bootstrap-server my-cluster-kafka-bootstrap:9092 --topic demo-4 --from-beginning --property print.key=true --property key.separator=":" --group group-2
 ```
 
-En résumé:
+In summary:
 
-* Consumer Group "group-1" a trois consumers de déployer
-* Consumer Group "group-2" a un consumer de déployer
+* Consumer Group "group-1" has three consumers to deploy
+* onsumer Group "group-2" has a consumer to deploy
 
 #### Étape 3: Messages et Index
 
-Démarrer un message producer Kafka capable d'indexer les messages:
+Step 3: Messages and Index
 
 ```
 oc run kafka-producer -ti --image=registry.access.redhat.com/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic demo-4  --property parse.key=true --property key.separator=":"
 ```
 
-Envoyer les messages suivants (1 par 1)
+Send the following messages (1 by 1)
 
-* 1:{"Marque":"Honda", "Modeles":["Civic","Accord","Odyssey"]}
-* 1:{"Marque":"Volkswagen", "Modeles":["Golf","Tiguan","Jetta"]}
-* 2:{"Marque":"Tesla", "Modeles":["S","X","3"]}
-* 3:{"Marque":"Toyota", "Modeles":["Camry","Corolla"]}
-* Votre création!  - Json avec index et séparateur :
+* 1:{"Brand":"Honda", "Modeles":["Civic","Accord","Odyssey"]}
+* 1:{"Brand":"Volkswagen", "Modeles":["Golf","Tiguan","Jetta"]}
+* 2:{"Brand":"Tesla", "Modeles":["S","X","3"]}
+* 3:{"Brand":"Toyota", "Modeles":["Camry","Corolla"]}
+* Your creation! - Json with index and separator:
 
-Oberver les résultats, les messages d'un même index devrait se retrouver sur le même client d'un consumer group. 
+Obtaining the results, the messages of the same index should be on the same client of a consumer group.
 
 
