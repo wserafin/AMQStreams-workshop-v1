@@ -57,9 +57,7 @@ In summary:
 * Consumer Group "group-1" has three consumers to deploy
 * onsumer Group "group-2" has a consumer to deploy
 
-#### Étape 3: Messages et Index
-
-Step 3: Messages and Index
+#### Step 3: Messages and Index
 
 ```
 oc run kafka-producer -ti --image=registry.access.redhat.com/amq7/amq-streams-kafka:1.1.0-kafka-2.1.1 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list my-cluster-kafka-bootstrap:9092 --topic demo-4  --property parse.key=true --property key.separator=":"
