@@ -27,7 +27,7 @@ The new Topic demo-3 appears in the list of available topics.
 To validate the topic configuration in the zookeeper, use the following command:
 
 ```
-oc exec my-cluster-zookeeper-0 -it -- bin/kafka-topics.sh --zookeeper localhost:21810  --describe --topic demo-3
+oc exec my-cluster-zookeeper-0 -it -- bin/kafka-topics.sh --zookeeper localhost:12181  --describe --topic demo-3
 ```
 
 ![ISR](images/lab3-replication-04.png)
