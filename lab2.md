@@ -26,7 +26,7 @@ The new Topic demo-2 appears in the list of available topics. The topic "my-topi
 To validate the topic configuration in the zookeeper, use the following command:
 
 ```
-oc exec my-cluster-zookeeper-0 -it -- bin/kafka-topics.sh --zookeeper localhost:21810  --describe --topic demo-2
+oc exec my-cluster-zookeeper-0 -it -- bin/kafka-topics.sh --zookeeper localhost:12181  --describe --topic demo-2
 ```
 
 This command executes the kafka-topics utility inside the zookeeper container
